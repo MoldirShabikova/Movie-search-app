@@ -2,9 +2,10 @@ import React, { Component } from "react";
 
 class MovieList extends Component {
   render() {
+    const { movies, btnClass, btnText, handleFavouritesClick } = this.props;
     return (
       <>
-        {this.props.movies.map((movie, index) => (
+        {movies.map((movie, index) => (
           <div className="col-md-3 mb-4" key={index}>
             <div className="card">
               <img
@@ -15,11 +16,17 @@ class MovieList extends Component {
                 }
                 className="card-img-top"
               />
-              <div className="card-bod">
-                <p>{movie.Title} - {movie.Year}</p>
-                <button className="btn btn-sm btn-success"
-                onClick={()=> this.props.handleFavouritesClick(movie)}>
 
+              <div className="card-body">
+                <p>
+                  {movie.Title} - {movie.Year}
+                </p>
+
+                <button
+                  className={`btn btn-sm ${btnClass}`}
+                  onClick={() => handleFavouritesClick(movie)}
+                >
+                  {btnText}
                 </button>
               </div>
             </div>
@@ -31,3 +38,4 @@ class MovieList extends Component {
 }
 
 export default MovieList;
+

@@ -19,6 +19,14 @@ class App extends Component {
   // called once on mount
   componentDidMount() {
     this.fetchMovies();
+
+    const movieFavourites = JSON.parse(
+      localStorage.getItem("react-movie-app-favourites")
+    );
+
+    if (movieFavourites) {
+      this.setState({ favourites: movieFavourites });
+    }
   }
 
   // called on each state or props change
@@ -29,7 +37,7 @@ class App extends Component {
   }
 
   fetchMovies = () => {
-    const url = `http://www.omdbapi.com?s=${this.state.searchValue}&apikey=bf3b1333`;
+    const url = `https://www.omdbapi.com?s=${this.state.searchValue}&apikey=bf3b1333`;
 
     fetch(url)
       .then((res) => res.json())
@@ -41,10 +49,32 @@ class App extends Component {
   setSearchValue = (value) => {
     this.setState({ searchValue: value });
   };
-  addFavouriteMovie = (movie) =>{
-    const newFavList = [...this.state.favourites, movie]
-    this.setState({favourites: newFavList})
-  }
+
+  addFavouriteMovie = (movie) => {
+    const newFavouriteList = [...this.state.favourites, movie];
+    this.setState({ favourites: newFavouriteList });
+
+    // this.setState((prevState) => {
+    //   return {
+    //     favourites: [...prevState.favourites, movie]
+    //   }
+    // })
+
+    this.saveToLocalStorage(newFavouriteList);
+  };
+
+  saveToLocalStorage = (items) => {
+    localStorage.setItem("react-movie-app-favourites", JSON.stringify(items));
+  };
+
+  removeFavouriteMovie = (movie) => {
+    const newFavouriteList = this.state.favourites.filter(
+      (favourite) => favourite.imdbID !== movie.imdbID
+    );
+
+    this.setState({ favourites: newFavouriteList });
+    this.saveToLocalStorage(newFavouriteList);
+  };
 
   render() {
     return (
@@ -56,8 +86,23 @@ class App extends Component {
         </div>
 
         <div className="row">
-          <MovieList movies={this.state.movies} 
-          handleFavouritesClick={this.addFavouriteMovie}/>
+          <MovieList
+            movies={this.state.movies}
+            btnText="Add to favorites"
+            btnClass="btn-success"
+            handleFavouritesClick={this.addFavouriteMovie}
+          />
+        </div>
+
+        <h3>My Favourites</h3>
+
+        <div className="row">
+          <MovieList
+            movies={this.state.favourites}
+            btnText="Remove from favourites"
+            btnClass="btn-danger"
+            handleFavouritesClick={this.removeFavouriteMovie}
+          />
         </div>
       </div>
     );
