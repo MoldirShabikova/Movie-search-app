@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import MovieList from "./components/movieList";
 import SearchBox from "./components/searchBox";
+import FilterBox from "./components/filterBox";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -31,13 +32,16 @@ class App extends Component {
 
   // called on each state or props change
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.searchValue !== this.state.searchValue) {
+    if (
+      prevState.searchValue !== this.state.searchValue ||
+      prevState.filterValue !== this.state.filterValue
+    ) {
       this.fetchMovies();
     }
   }
 
   fetchMovies = () => {
-    const url = `https://www.omdbapi.com?s=${this.state.searchValue}&apikey=bf3b1333`;
+    const url = `https://www.omdbapi.com?s=${this.state.searchValue}&type=${this.state.filterValue}&apikey=bf3b1333`;
 
     fetch(url)
       .then((res) => res.json())
@@ -76,13 +80,18 @@ class App extends Component {
     this.saveToLocalStorage(newFavouriteList);
   };
 
+  setFilterValue = (value) => {
+    this.setState({ filterValue: value });
+  };
+
   render() {
     return (
       <div className="container">
         <h3>Movies App</h3>
 
-        <div className="row">
+        <div className="row justify-content-md-center mb-3">
           <SearchBox setSearchValue={this.setSearchValue} />
+          <FilterBox setFilterValue={this.setFilterValue} />
         </div>
 
         <div className="row">
